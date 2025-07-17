@@ -3,33 +3,38 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 
 export default function HomePage() {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
+  const [editIndex, setEditIndex] = useState(null);
 
   const addTodo = () => {
-    if (newTodo.trim()) {
-      setTodos([...todos, { text: newTodo, id: Date.now() }]);
-      setNewTodo("");
+    if (newTodo.trim() === "") return;
+    if (editIndex !== null) {
+      const updatedTodos = [...todos];
+      updatedTodos[editIndex] = newTodo;
+      setTodos(updatedTodos);
+      setEditIndex(null);
+    } else {
+      setTodos([...todos, newTodo]);
     }
+    setNewTodo("");
   };
 
-  const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const deleteTodo = (index) => {
+    setTodos(todos.filter((_, i) => i !== index));
   };
 
-  const updateTodo = (id, newText) => {
-    setTodos(
-      todos.map((todo) => (todo.id === id ? { ...todo, text: newText } : todo))
-    );
+  const editTodo = (index) => {
+    setNewTodo(todos[index]);
+    setEditIndex(index);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50">
-      <h1 className="text-2xl font-bold text-blue-500 mb-4">Todo List</h1>
-      <div className="flex items-center mb-4">
+      <h1 className="text-2xl font-bold text-blue-600 mb-4">Todo List</h1>
+      <div className="flex mb-4">
         <Input
           value={newTodo}
           onChange={(e) => setNewTodo(e.target.value)}
@@ -37,27 +42,35 @@ export default function HomePage() {
           className="mr-2"
         />
         <Button onClick={addTodo} className="bg-blue-500 text-white">
-          Add
+          {editIndex !== null ? "Update" : "Add"}
         </Button>
       </div>
-      <div className="text-blue-500 mb-4">Total Items: {todos.length}</div>
-      <div className="w-full max-w-md">
-        {todos.map((todo) => (
-          <Card key={todo.id} className="mb-2 p-4 flex justify-between items-center">
-            <input
-              type="text"
-              value={todo.text}
-              onChange={(e) => updateTodo(todo.id, e.target.value)}
-              className="flex-1 mr-2"
-            />
-            <Button
-              onClick={() => deleteTodo(todo.id)}
-              className="bg-red-500 text-white"
-            >
-              Delete
-            </Button>
-          </Card>
+      <ul className="w-full max-w-md">
+        {todos.map((todo, index) => (
+          <li
+            key={index}
+            className="flex justify-between items-center bg-white p-2 mb-2 shadow rounded"
+          >
+            <span>{todo}</span>
+            <div>
+              <Button
+                onClick={() => editTodo(index)}
+                className="bg-blue-300 text-white mr-2"
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={() => deleteTodo(index)}
+                className="bg-red-500 text-white"
+              >
+                Delete
+              </Button>
+            </div>
+          </li>
         ))}
+      </ul>
+      <div className="text-blue-600 mt-4">
+        Total Items: {todos.length}
       </div>
     </div>
   );
