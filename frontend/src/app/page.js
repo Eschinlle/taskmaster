@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 export default function HomePage() {
   const [todos, setTodos] = useState([]);
@@ -27,8 +27,8 @@ export default function HomePage() {
   };
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold text-blue-600 mb-4">Todo List</h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50">
+      <h1 className="text-2xl font-bold text-blue-500 mb-4">Todo List</h1>
       <div className="flex items-center mb-4">
         <Input
           value={newTodo}
@@ -40,25 +40,25 @@ export default function HomePage() {
           Add
         </Button>
       </div>
-      <div className="mb-4">
-        <span className="text-blue-600">Total Todos: {todos.length}</span>
+      <div className="text-blue-500 mb-4">Total Items: {todos.length}</div>
+      <div className="w-full max-w-md">
+        {todos.map((todo) => (
+          <Card key={todo.id} className="mb-2 p-4 flex justify-between items-center">
+            <input
+              type="text"
+              value={todo.text}
+              onChange={(e) => updateTodo(todo.id, e.target.value)}
+              className="flex-1 mr-2"
+            />
+            <Button
+              onClick={() => deleteTodo(todo.id)}
+              className="bg-red-500 text-white"
+            >
+              Delete
+            </Button>
+          </Card>
+        ))}
       </div>
-      {todos.map((todo) => (
-        <Card key={todo.id} className="mb-2 p-2 flex justify-between items-center">
-          <input
-            type="text"
-            value={todo.text}
-            onChange={(e) => updateTodo(todo.id, e.target.value)}
-            className="flex-grow mr-2"
-          />
-          <Button
-            onClick={() => deleteTodo(todo.id)}
-            className="bg-red-500 text-white"
-          >
-            Delete
-          </Button>
-        </Card>
-      ))}
     </div>
   );
 }
